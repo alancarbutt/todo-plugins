@@ -1,9 +1,15 @@
 #!/bin/bash
-# AUTHOR: severoraz@gmail.com
+# AUTHOR: severoraz@gmail.com {{{
 # LICENSE: CC-BY-SA v3.0
 # DESCRIPTION
 # This is a todo.txt-cli extension to set or change the due date of a set of
 # tasks
+#
+# FORKING project due to bug caused in my todo.txt file to turn up empty
+# License is now under the Unlicense
+# DATE: 2019-11-26
+# Author of MODS:  Alan Carbutt
+# }}}
 
 #set -x
 # trap read debug
