@@ -5,7 +5,7 @@
 # This is a todo.txt-cli extension to set or change the due date of a set of
 # tasks
 
-# set -x
+#set -x
 # trap read debug
 
 # Set self name
@@ -79,7 +79,7 @@ function add_days {
         xabs=$x
     fi
 
-    echo $(date -d "$1 $xsgn $xabs days" +"%Y-%m-%d")
+    date -d "$1 $xsgn $xabs days" +"%Y-%m-%d"
 }
 
 function has_dd {
@@ -116,7 +116,7 @@ function year_is_leap {
 function yearlen {
     # echo $1
     # echo $( year_is_leap $1 )
-    (( len= 365 + $( year_is_leap $1 )  ))
+    (( len= 365 + $( year_is_leap "$1" )  ))
     echo $len
 }
 
@@ -133,21 +133,21 @@ function get_md_from_yod {
     year=$1
     date=$2
     month=1
-    while [[ $date -gt $( monthlen $month $year ) ]] && [[ $month -le 12 ]]; do
-        (( date= $date - $( monthlen $month $year ) ))
-        let month=month+1
+    while [[ $date -gt $( monthlen $month "$year" ) ]] && [[ $month -le 12 ]]; do
+        (( date= date - $( monthlen $month "$year" ) ))
+        (( month=month+1 ))
     done
     echo $month $date
 }
 
 
 function monthlen {
-    month=$( printf "%d\n" $1 )
+    month=$( printf "%d\n" "$1" )
     case $month in
         2) # February: may be leap year!
-            if   [ $( year_is_leap $2 ) -eq 1 ]; then
+            if   [ "$( year_is_leap "$2" )" -eq 1 ]; then
                 echo 29
-            elif [ $( year_is_leap $2 ) -eq 0 ]; then
+            elif [ "$( year_is_leap "$2" )" -eq 0 ]; then
                 echo 28
             fi
             ;;
@@ -176,13 +176,14 @@ function get_firstday_weekday {
 # get_first_monday - calculates the date of the first monday of the year (W01-1)
 function get_first_monday {
     # get first week
-    weekday1=$(get_firstday_weekday $1)
+    weekday1=$(get_firstday_weekday "$1")
     # if weekday1 <= 4, first week day is this week
-    monday=$(add_days 2019-01-01 $((0-$weekday1)) )
+    monday=$(add_days 2019-01-01 $((0-weekday1)) )
     # if weekday1 > 4, first week is next week
-    monday=$(add_days 2019-01-01 $((7-$weekday1)) )
+    monday=$(add_days 2019-01-01 $((7-weekday1)) )
     #
     # get first weekday
+    echo "$monday"
 }
 
 # EOB Functions 1}}}
@@ -244,7 +245,7 @@ case $2 in
         # if b is defined, a weekday was given
         if [[ -n $b ]]; then
             a=$(date +%u) # current weekday ordinal (1:monday, 7:sunday)
-            inputdate=$(echo +$((b-a))) # convert into differential duedate
+            inputdate=+$((b-a)) # convert into differential duedate
         fi
     fi
     # ## numerical dates
@@ -266,33 +267,33 @@ case $2 in
     elif [[ $inputdate =~ $FMT_YYYY_DDD ]]; then
         year=${BASH_REMATCH[1]}
         odate=$((10#${BASH_REMATCH[2]}))
-        [[ $( get_md_from_yod $year $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
+        [[ $( get_md_from_yod "$year" $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
         month=${BASH_REMATCH[1]}
         date=${BASH_REMATCH[2]}
         # echo FMT_YYYY_DDD
     elif [[ $inputdate =~ $FMT__DDD ]]; then
         # year stays default
         odate=$((10#${BASH_REMATCH[1]}))
-        [[ $( get_md_from_yod $year $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
+        [[ $( get_md_from_yod "$year" $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
         month=${BASH_REMATCH[1]}
         date=${BASH_REMATCH[2]}
         # echo FMT__DDD
     elif [[ $inputdate =~ $FMT_YYYY_WWW ]]; then # TODO: add first-weekday-of-the-year algorithm
         year=${BASH_REMATCH[1]}
         week=${BASH_REMATCH[2]}
-        echo $year $week
+        echo "$year" "$week"
         # TODO: let user select which weekday is the default
-        let odate=$week*7-2
-        [[ $( get_md_from_yod $year $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
+        (( odate=week*7-2 ))
+        [[ $( get_md_from_yod "$year" $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
         month=${BASH_REMATCH[1]}
         date=${BASH_REMATCH[2]}
         echo FMT_YYYY_WWW
     elif [[ $inputdate =~ $FMT__WWW ]]; then # TODO: add first-weekday-of-the-year algorithm
         # year stays default
         week=${BASH_REMATCH[1]}
-        echo $year $week
-        let odate=$week*7-2
-        [[ $( get_md_from_yod $year $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
+        echo "$year" "$week"
+        (( odate=week*7-2 ))
+        [[ $( get_md_from_yod "$year" $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
         month=${BASH_REMATCH[1]}
         date=${BASH_REMATCH[2]}
         echo FMT__WWW
@@ -301,20 +302,20 @@ case $2 in
         week=${BASH_REMATCH[2]}
         weekday=${BASH_REMATCH[3]}
         # echo $year $week
-            weekday1=$( get_firstday_weekday $year )
+            weekday1=$( get_firstday_weekday "$year" )
         if [[ $weekday -lt $weekday1 ]]; then
-            echo weekday invalid, first weekday in $year-W$week is $weekday1
+            echo weekday invalid, first weekday in "$year"-W"$week" is "$weekday1"
         fi
-        if [[ $(($weekday-$weekday1)) -gt 6 ]]; then
-            echo weekday is invalid, last weekday in $year-W$week is $weekday1
+        if [[ $(("$weekday"-"$weekday1")) -gt 6 ]]; then
+            echo weekday is invalid, last weekday in "$year"-W"$week" is "$weekday1"
         fi
 
-        odate=$(( 0 - $weekday1 + ($week-1)*7 + $weekday ))
+        odate=$(( 0 - weekday1 + (week-1)*7 + weekday ))
         # TODO: algorithm is wrong, doesn't account for week offsets
         # weeks start on mondays always
         echo odate is $odate
-        echo add_days gives $(add_days $(echo $year-01-01) $odate)
-        [[ $( get_md_from_yod $year $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
+        echo add_days gives "$(add_days "$(echo "$year"-01-01)" $odate)"
+        [[ $( get_md_from_yod "$year" $odate ) =~ ([[:digit:]]+)" "([[:digit:]]+) ]]
         month=${BASH_REMATCH[1]}
         date=${BASH_REMATCH[2]}
         echo FMT_YYYY_WWW_D
@@ -326,14 +327,14 @@ case $2 in
     ## diferential dates
     elif [[ $inputdate =~ $FMT_MDDD ]]; then
         (( diff= 0 - ${BASH_REMATCH[1]} ))
-        [[ $( add_days $today $diff ) =~ $FMT_YYYY_MM_DD ]]
+        [[ $( add_days "$today" $diff ) =~ $FMT_YYYY_MM_DD ]]
         year=${BASH_REMATCH[1]}
         month=${BASH_REMATCH[2]}
         date=${BASH_REMATCH[3]}
         # echo FMT_MDDD
     elif [[ $inputdate =~ $FMT_PDDD ]]; then
         diff=${BASH_REMATCH[1]}
-        [[ $( add_days $today $diff ) =~ $FMT_YYYY_MM_DD ]]
+        [[ $( add_days "$today" "$diff" ) =~ $FMT_YYYY_MM_DD ]]
         year=${BASH_REMATCH[1]}
         month=${BASH_REMATCH[2]}
         date=${BASH_REMATCH[3]}
@@ -351,27 +352,29 @@ case $2 in
         echo month invalid
     fi
     ## month-date
-    mlen=$( monthlen $month $year )
-    if [[ $date -gt $( monthlen $month $year ) ]]; then
+    mlen=$( monthlen "$month" "$year" )
+    echo "$mlen"
+    if [[ $date -gt $( monthlen "$month" "$year" ) ]]; then
         echo month-date combination invalid
-        echo year $year month $month date $date
-        echo monlength $( monthlen $month $year )
+        echo year "$year" month "$month" date "$date"
+        echo monlength "$( monthlen "$month" "$year" )"
     fi
 
     # printf "%d-%02d-%02d\n" $year $month $date
-    ddate=$( printf "%04d-%02d-%02d" $year $month $date )
+    ddate=$( printf "%04d-%02d-%02d" "$year" "$month" "$date" )
 
     # edit dates in
     tstr=""
-    for ii in ${@:3}; do
+    echo "$tstr"
+    for ii in "${@:3}"; do
         # get todo line
-        origstr=$( sed -n ${ii}p $srcfile )
+        origstr=$( sed -n "${ii}"p "$srcfile" )
         repstr="$origstr"
         # if has due date, change due date
         if [[ $( has_dd "$origstr" ) -eq 1 ]]; then
             # echo has due date, replace due date
             # tstr="${tstr/due:[^ ]\+/due:$ddate}"
-            repstr=$( echo $origstr | sed -E "s/([ ^]?due:)[^ ]*/\1$ddate/g" )
+            repstr=$( echo "$origstr" | sed -E "s/([ ^]?due:)[^ ]*/\1$ddate/g" )
             # TODO: try to find a pure bash alternative to this
         # otherwise, add due date at the end
         # (its more simple now that creation dates or crossed status or priorities don't have to be
@@ -392,13 +395,13 @@ case $2 in
             echo -e "\t$repstr"
             echo -n "Y/n: "
             # Read choice
-            read choice;
+            read -r choice;
         fi
         # Interpret choice
         # If choice is not empty or "n" or "N", exit without applying changes
         # Changed second instance of ${choice} from ${choice,,} to solve bug
         # #2, awaiting confirmation of solution
-        if [ ! -z "${choice}" ] && [ "${choice}" == "n" ]; then
+        if [ -n "${choice}" ] && [ "${choice}" == "n" ]; then
             # Notify that changes were aborted
             if [ $TODOTXT_SETDUE_SAFECHECK == "1" ] || [ $TODOTXT_SETDUE_VERBOSE == "1" ]; then
                 echo "$self: Changes aborted."
@@ -413,8 +416,19 @@ case $2 in
             # editting of the file. It is done without the -i flag of sed
             # because it is not equivalently interpreted by BSD sed, which may
             # be present in some computers
-            sed "${ii}c\\$repstr" $srcfile > "$srcfile.setdue"
-            mv "$srcfile.setdue" $srcfile
+            sed "${ii}c\\$repstr" "$srcfile" > "$srcfile".setdue
+            if [ ! -s "$srcfile.setdue" ]; then
+              sed "s/$origstr/$repstr/g" "$srcfile" > "$srcfile".setdue
+            else
+              echo "First pass a bust..."
+            fi
+            if [ -s "$srcfile.setdue" ]; then
+              cp "$srcfile".setdue "$srcfile"
+            else
+              echo "Second pass a bust..."
+              echo "$srcfile.setdue is null...Aborting operation..."
+              exit 1
+            fi
 
             # Notify that changes were applied
             if [ $TODOTXT_SETDUE_SAFECHECK == "1" ] || [ $TODOTXT_SETDUE_VERBOSE == "1" ]; then
