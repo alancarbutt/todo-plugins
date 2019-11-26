@@ -11,5 +11,5 @@ Thus far, I have had to fix the following plugins
 
 More to come...
 
-[x] Fix xp code and documentation
-[ ] Fix setdue issue where sed command deletes all TODOs in the todo.txt file
+- [x] Fix xp code and documentation
+- [ ] Fix setdue issue where sed command deletes all TODOs in the todo.txt file
