@@ -5,8 +5,8 @@
 # This is a todo.txt-cli extension to set or change the due date of a set of
 # tasks
 
-set -x
-trap read debug
+#set -x
+#trap read debug
 
 # Set self name
 self="setdue"
