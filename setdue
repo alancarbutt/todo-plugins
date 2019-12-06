@@ -1,18 +1,12 @@
 #!/bin/bash
-# AUTHOR: severoraz@gmail.com {{{
+# AUTHOR: severoraz@gmail.com
 # LICENSE: CC-BY-SA v3.0
 # DESCRIPTION
 # This is a todo.txt-cli extension to set or change the due date of a set of
 # tasks
-#
-# FORKING project due to bug caused in my todo.txt file to turn up empty
-# License is now under the Unlicense
-# DATE: 2019-11-26
-# Author of MODS:  Alan Carbutt
-# }}}
 
-#set -x
-# trap read debug
+set -x
+trap read debug
 
 # Set self name
 self="setdue"
@@ -139,7 +133,7 @@ function get_md_from_yod {
     year=$1
     date=$2
     month=1
-    while [[ $date -gt $( monthlen $month "$year" ) ]] && [[ $month -le 12 ]]; do
+    while [[ 10#$date -gt 10#$( monthlen $month "$year" ) ]] && [[ $month -le 12 ]]; do
         (( date= date - $( monthlen $month "$year" ) ))
         (( month=month+1 ))
     done
@@ -194,7 +188,7 @@ function get_first_monday {
 
 # EOB Functions 1}}}
 
-# Main block {{{1
+# Main block {{{
 usagestr="usage: $TODO_SH $self DUEDATE ITEM#+
 parameter conditions:
  * DUEDATE must be in a supported date format
@@ -360,14 +354,14 @@ case $2 in
     ## month-date
     mlen=$( monthlen "$month" "$year" )
     echo "$mlen"
-    if [[ $date -gt $( monthlen "$month" "$year" ) ]]; then
+    if [[ 10#$date -gt $( monthlen "$month" "$year" ) ]]; then
         echo month-date combination invalid
         echo year "$year" month "$month" date "$date"
         echo monlength "$( monthlen "$month" "$year" )"
     fi
 
     # printf "%d-%02d-%02d\n" $year $month $date
-    ddate=$( printf "%04d-%02d-%02d" "$year" "$month" "$date" )
+    ddate=$( printf "%04d-%02d-%02s" "$year" "$month" "$date" )
 
     # edit dates in
     tstr=""
