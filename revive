@@ -1,6 +1,10 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 # Copyright (c) 2013 Duncan Eastoe <duncaneastoe@gmail.com>
+=======
+# Copyright (c) 2013 Duncan Eastoe <duncaneastoe@gmail.com> {{{
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -12,9 +16,20 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
 # BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+<<<<<<< HEAD
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Display usage information ##
+=======
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. }}}
+#***  Debugging on/off {{{
+set -x
+trap read debug
+#*** }}}
+
+## Display usage information ## {{{
+
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
 function usage {
     cat <<-END
         revive - Restore tasks from done.txt
@@ -30,14 +45,28 @@ function usage {
     exit 0
 }
 
+<<<<<<< HEAD
 ## Lists completed todos in done.txt ##
+=======
+#*** }}}
+
+## Lists completed todos in done.txt ## {{{
+
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
 function listAvailableTodos {
     $TODO_FULL_SH listfile "$TODO_DIR/done.txt"
 
     exit 0
 }
 
+<<<<<<< HEAD
 ## Copies todo from done.txt back to todo.txt ##
+=======
+#*** }}}
+
+## Copies todo from done.txt back to todo.txt ## {{{
+
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
 function reviveTodo {
     getTodo "$1" "$TODO_DIR/done.txt"
     cleanTodo=$(echo "$todo" | sed -E 's/x [0-9]{4}-[0-9]{2}-[0-9]{2} //')
@@ -46,6 +75,13 @@ function reviveTodo {
     exit 0
 }
 
+<<<<<<< HEAD
+=======
+#*** }}}
+
+#*** MAIN {{{
+
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
 if [ "$1" == "usage" ]; then
     usage
 fi
@@ -59,3 +95,8 @@ elif [[ "$1" =~ [0-9]+ ]]; then
 else
     usage
 fi
+<<<<<<< HEAD
+=======
+
+#*** }}}
+>>>>>>> f58d44633ea53645215e991d55af17c9e20ced06
