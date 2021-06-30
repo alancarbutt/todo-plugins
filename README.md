@@ -19,5 +19,5 @@ More to come...
 
 - [x] Fix xp code and documentation
 - [x] Fix setdue issue where sed command deletes all TODOs in the todo.txt file
-- [ ] Fix BASH issues for again script
+- [x] Fix BASH issues for again script
 - [ ] Fix documentation for again script

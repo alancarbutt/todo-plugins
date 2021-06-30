@@ -32,6 +32,7 @@ readonly AGAIN_TAG="${TODO_AGAIN_TAG:-again}"
 
 function usage()
 {
+  echo ""
   echo " again add-on:"
   echo "   again N"
   echo "     Mark N as complete and recreate with any due date set as today."

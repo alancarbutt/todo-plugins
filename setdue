@@ -189,7 +189,8 @@ function get_first_monday {
 # EOB Functions 1}}}
 
 # Main block {{{
-usagestr="usage: $TODO_SH $self DUEDATE ITEM#+
+usagestr="
+usage: $TODO_SH $self DUEDATE ITEM#+
 parameter conditions:
  * DUEDATE must be in a supported date format
  * ITEM# must be an integer"
