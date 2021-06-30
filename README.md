@@ -2,9 +2,9 @@
 
 ## My favorite plugins for todo.txt
 
-I'm including the plugins that I use that I had to modify for use with todo.txt
+I'm including the plugins that I use that I had to modify for use with todo.txt. These plugins are listed on the https://github.com/todotxt/todo.txt-cli/wiki/Todo.sh-Add-on-Directory site
 
-I'm testing the code on my iMac running Catalina
+I'm testing the code on my iMac running Big Sur
 
 Thus far, I have had to fix the following plugins
 
@@ -14,6 +14,22 @@ Thus far, I have had to fix the following plugins
     * Fixed BASH issues
     * Fixed sed call that in some instances deletes all contents in the todo.txt file
 * again
+    * Fix Documentation
+* projectview
+    * Just worked
+* edit
+    * Just worked
+* recur
+    * had to install perlbrew (https://perlbrew.pl/) to make this one work
+    * cron was used to schedule the recurring tasks
+* remind
+    * worked out of the box
+* revive
+    * cleaned up some of the BASH script code
+* schedule
+    * cleaned up some of the BASH code
+* stale
+    * worked out of the box
 
 More to come...
 
