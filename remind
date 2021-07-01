@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#*** Trun debugging on/off
+#set -x
+#trap read debug
+
 #*** {{{
 # todo=inherited from todo.sh script
 # 2021-07-01
@@ -31,20 +35,24 @@ case "$1" in
     alert_time=$(date -j -f "%H:%M" "+%I:%M%p" "$3")
 
     #*** {{{ check for the reminded flag in the todo
-    if [ ! -z $(echo $todo | grep -i reminded) ]; then
+    if [[ "$todo" == *"reminded"* ]]; then
+      echo "Todo already added to reminders"
+      exit 0
+    else
 
 ### Original functionality
 #$TODO_SH append "$1" "#reminded"
 
 ### AC patch to put due back at the end of the line
 ### get due:date values and store in a variable
-TODO_MESSAGE=$(echo "$todo" | awk -F"due:" '{print $1}' | sed 's/([A-Z]) //g')
-TODO_DUE_DATE=$(echo "$todo" | awk -F"due:" '{print "due:"$2}')
-FINAL_TODO_MESSAGE="$TODO_MESSAGE #reminded $TODO_DUE_DATE"
+    echo Modifying "$todo" ...
+    TODO_MESSAGE=$(echo "$todo" | awk -F"due:" '{print $1}' | sed 's/([A-Z]) //g')
+    TODO_DUE_DATE=$(echo "$todo" | awk -F"due:" '{print "due:"$2}')
+    FINAL_TODO_MESSAGE="$TODO_MESSAGE#reminded $TODO_DUE_DATE"
 
-$TODO_SH replace "$1" "$FINAL_TODO_MESSAGE"
+    $TODO_SH replace "$1" "$FINAL_TODO_MESSAGE"
 
-echo "$todo + $alert_date + $alert_time"
+    echo "$todo + $alert_date + $alert_time"
 osascript - "$todo" "$alert_date" "$alert_time" <<END_OSA
 on run argv
     set stringedAll to date (item 2 of argv & " " & item 3 of argv)
@@ -55,9 +63,6 @@ on run argv
     end tell
 end run
 END_OSA
-    else
-      echo "Todo already added to reminders"
-      exit 0
     fi
     #*** }}}
 ;;
