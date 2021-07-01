@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 
+#*** {{{
+# todo=inherited from todo.sh script
+# 2021-07-01
+# working on MOD to not add additional reminder if one is already flagged -- AC
+#*** }}}
+todo=""
+
+#*** {{{ Parse arguments
 action=$1
 shift
+#*** }}}
 
-echo "todo value $todo"
-
+#*** {{{ if looking for usage
 [ "$action" = "usage" ] && {
   echo ""
   echo "  Remind:"
@@ -13,12 +21,17 @@ echo "todo value $todo"
   echo ""
   exit 0
 }
+#*** }}}
 
+#*** {{{
 case "$1" in
 [0-9]*)
     getTodo "$1"
     alert_date=$(date -j -f "%Y-%m-%d" "+%m/%d/%Y" "$2")
     alert_time=$(date -j -f "%H:%M" "+%I:%M%p" "$3")
+
+    #*** {{{ check for the reminded flag in the todo
+    if [ ! -z $(echo $todo | grep -i reminded) ]; then
 
 ### Original functionality
 #$TODO_SH append "$1" "#reminded"
@@ -32,7 +45,7 @@ FINAL_TODO_MESSAGE="$TODO_MESSAGE #reminded $TODO_DUE_DATE"
 $TODO_SH replace "$1" "$FINAL_TODO_MESSAGE"
 
 echo "$todo + $alert_date + $alert_time"
-osascript - "$todo" "$alert_date" "$alert_time" <<END
+osascript - "$todo" "$alert_date" "$alert_time" <<END_OSA
 on run argv
     set stringedAll to date (item 2 of argv & " " & item 3 of argv)
     tell application "Reminders"
@@ -41,8 +54,14 @@ on run argv
     end tell
     end tell
 end run
-END
+END_OSA
+    else
+      echo "Todo already added to reminders"
+      exit 0
+    fi
+    #*** }}}
 ;;
 *)
     echo "Usage: $TODO_SH remind ITEM# DATE TIME"
 esac
+#*** }}}
